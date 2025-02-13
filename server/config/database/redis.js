@@ -17,4 +17,5 @@ const ssl = {
 
 const redisClient = redis.createClient(env.node_env === 'production' ? {...config,...ssl} : config)
 
+
 module.exports = redisClient

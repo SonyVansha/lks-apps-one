@@ -21,36 +21,80 @@ let redisCache = (req, res, next) => {
     })
 }
 
-let flatCache = (req,res, next) => {
-    const cache_path = env.cache_path || path.join(__dirname, '../tmp')
+let flatCache = (req, res, next) => {
+    const cache_path = env.cache_path || path.join(__dirname, '../tmp');
 
+    // Buat direktori cache jika belum ada
     if (!fs.existsSync(cache_path)) {
-        fs.mkdirSync(cache_path, { recursive: true })
+        fs.mkdirSync(cache_path, { recursive: true });
     }
 
-    const fCache = flatCachelib.load("__API_ENDPOINT__" + req.originalUrl || req.url, path.resolve(`${cache_path}`))
-    const dateTime = new Date().getTime()
+    // Load cache
+    const fCache = flatCachelib.load("__API_ENDPOINT__" + req.originalUrl, path.resolve(`${cache_path}`));
+    const dateTime = new Date().getTime();
 
-    let keyId =  '__express__' + req.originalUrl || req.url
-    let keyData = {
-        expire: this.expire === false ? false : dateTime + this.expire,
-        data: keyId
-    }
+    // Key cache (gunakan req.originalUrl sebagai key)
+    const keyId = '__express__' + req.originalUrl;
 
-    let cacheContent = fCache.getKey(keyData)
+    // Waktu kedaluwarsa cache (misalnya, 5 menit)
+    const expireTime = 5 * 60 * 1000; // 5 menit dalam milidetik
+    const keyData = {
+        expire: dateTime + expireTime, // Waktu kedaluwarsa
+        data: keyId // Data yang disimpan
+    };
 
-    if ( cacheContent){
-        res.json(JSON.parse(cacheContent))
-        return
+    // Cek cache
+    const cacheContent = fCache.getKey(keyId); // Gunakan keyId sebagai key
+
+    if (cacheContent && dateTime < JSON.parse(cacheContent).expire) {
+        // Jika cache ada dan belum kedaluwarsa, kirim respons dari cache
+        res.json(JSON.parse(cacheContent).data);
+        return;
     } else {
-        res.sendResponse = res.send
+        // Jika cache tidak ada atau kedaluwarsa, lanjutkan ke endpoint
+        const originalSend = res.send;
         res.send = (body) => {
-            fCache.setKey(keyData, body);
-            fCache.save();
-            res.sendResponse(body)
-        }
-        next()
+            // Simpan respons ke cache
+            fCache.setKey(keyId, JSON.stringify({
+                expire: dateTime + expireTime,
+                data: body
+            }));
+            fCache.save(); // Simpan cache ke file
+            originalSend.call(res, body); // Kirim respons asli
+        };
+        next();
     }
 };
+// let flatCache = (req,res, next) => {
+//     const cache_path = env.cache_path || path.join(__dirname, '../tmp')
+
+//     if (!fs.existsSync(cache_path)) {
+//         fs.mkdirSync(cache_path, { recursive: true })
+//     }
+
+//     const fCache = flatCachelib.load("__API_ENDPOINT__" + req.originalUrl || req.url, path.resolve(`${cache_path}`))
+//     const dateTime = new Date().getTime()
+
+//     let keyId =  '__express__' + req.originalUrl || req.url
+//     let keyData = {
+//         expire: this.expire === false ? false : dateTime + this.expire,
+//         data: keyId
+//     }
+
+//     let cacheContent = fCache.getKey(keyData)
+
+//     if ( cacheContent){
+//         res.json(JSON.parse(cacheContent))
+//         return
+//     } else {
+//         res.sendResponse = res.send
+//         res.send = (body) => {
+//             fCache.setKey(keyData, body);
+//             fCache.save();
+//             res.sendResponse(body)
+//         }
+//         next()
+//     }
+// };
 
 module.exports = { redisCache, flatCache };
