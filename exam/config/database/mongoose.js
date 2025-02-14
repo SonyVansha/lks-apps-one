@@ -1,37 +1,28 @@
-const mongoose  = require('mongoose')
-const fs        = require('fs')
-const path      = require('path')
-const env       = require('../../env')
+const mongoose = require('mongoose');
+const env = require('../../env'); // Pastikan path ke file env benar
 
-const clusterUrl = `mongodb://${env.mongoose.username}:${env.mongoose.password}@${env.mongoose.host}:${env.mongoose.port || '27017'}/${env.mongoose.database}?tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false`
-const ca = `${path.join(__dirname, `../../ssl/${ env.mongoose.cert || 'rds-combined-ca-bundle.pem'}`)}`
+// URL koneksi MongoDB lokal atau non-AWS
+const localUrl = `mongodb+srv://sony:adminsony@cluster0.peb7z.mongodb.net/test`;
+const uri = "mongodb+srv://sony:adminsony@cluster0.peb7z.mongodb.net/test";
 
-let mongoConn
+const conn      = mongoose.connection;
 
-if (env.db_type === 'mongodb_aws') {
-    mongoConn = mongoose.connect(`${clusterUrl}`, {
-        tlsCAFile: `${ca}`,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }).then(() => {
-        return true
-    }).catch((e) => {
-        console.log(e)
-        return false
-    })
-} else {
-    mongoConn = mongoose.connect(`mongodb://${env.mongoose.host}:${env.mongoose.port}/${env.mongoose.database}`, {
-        auth: { "authSource": "admin" },
-        user: env.mongoose.username,
-        pass: env.mongoose.password,
-        useNewUrlParser: true,
-        useUnifiedTopology: true, 
-    }).then(() => {
-        return true
-    }).catch((e) => {
-        console.log(e)
-        return false
-    })
-}
+const mongoConn = mongoose.connect(`mongodb+srv://${env.mongoose.host}:${env.mongoose.port || "27017"}/${env.mongoose.database}`, {
+    auth: { "authSource": "admin" },
+    user: env.mongoose.username,
+    pass: env.mongoose.password,
+    useNewUrlParser: true,
+    // serverSelectionTimeoutMS: 30000,
+    // useUnifiedTopology: true, 
+    // useCreateIndex: true,
+    // useFindAndModify: false,
+    autoIndex: true
+})
+.then(() => {
+  console.log('Koneksi ke MongoDB berhasil!');
+})
+.catch(err => {
+  console.error('Koneksi ke MongoDB gagal:', err);
+});
 
-module.exports = mongoConn
+module.exports = mongoConn;

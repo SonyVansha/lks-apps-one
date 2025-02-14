@@ -3,7 +3,7 @@ const env       = require('../../env')
 
 const db = new Sequelize(`${env.sequelize.database}`, `${env.sequelize.username}`, `${env.sequelize.password}`, {
     host: env.sequelize.host,
-    dialect: env.db_type,
+    dialect: env.db_type || 'mysql',
     logging: false,
 });
 

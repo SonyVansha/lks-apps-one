@@ -13,7 +13,7 @@ const env = {
     firebase_url: process.env.FIREBASE_URL,
     db_type: process.env.DB_TYPE,
     log_path: process.env.LOG_PATH,
-    cache_path: process.env.LOG_PATH,
+    cache_path: process.env.CACHE_PATH,
     aws: {
         accessKeyId: process.env.AWS_ACCESS_KEY,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -31,6 +31,7 @@ const env = {
         username: process.env.MONGO_USERNAME,
         password: process.env.MONGO_PASSWORD,
         host: process.env.MONGO_HOST,
+        db_type: process.env.MONGOOSE_DB_TYPE,
         port: process.env.MONGO_PORT,
         cert: process.env.MONGO_CERT
     },

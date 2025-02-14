@@ -67,9 +67,9 @@ const indexRoute     = require('./routes/indexRoute')
 indexRoute(app)
 /* End of Routing Modules */
 
-/* Start Database Connection Check */
+
 let conn
-if (env.db_type === 'mongodb' || env.db_type === 'mongodb_aws') {
+if (env.db_type === 'mongodb') {
     conn = require('./config/database/mongoose')
 } else {
     const { dbConn } = require('./config/database/sequelize')
