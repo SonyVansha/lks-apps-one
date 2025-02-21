@@ -1,9 +1,6 @@
 version: '3.8'
 
 services:
-<<<<<<< HEAD
-
-=======
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -32,4 +29,4 @@ services:
 volumes:
   mongodb_data:
   redis_data:
->>>>>>> dev
+
