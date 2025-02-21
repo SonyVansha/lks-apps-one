@@ -1,20 +1,18 @@
-const {db, Sequelize} = require('../config/database/sequelize')
+const { db, Sequelize } = require('../config/database/sequelize');
 
-const majorsModel = db.define('majors', {
+const Majors = db.define('majors', {
     majorsId: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        allowNull: false,
-        unique: true
+        primaryKey: true,  // Sesuai dengan PRIMARY KEY
+        allowNull: false,  // Tidak boleh NULL
     },
     major_name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(50),  // Sesuai dengan VARCHAR(50)
+        allowNull: true  // Bisa NULL, sesuai dengan definisi tabel
     }
-},{
-    timestamps: false,
-    createdAt: false,
-    updatedAt: false
-})
+}, {
+    tableName: 'majors', // Pastikan nama tabel sesuai dengan database
+    timestamps: false // Tidak menggunakan createdAt dan updatedAt
+});
 
-module.exports = majorsModel
+module.exports = Majors;

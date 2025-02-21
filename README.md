@@ -49,6 +49,7 @@ REDIS_PORT=YOUR_REDIS_PORT
 REDIS_PASSWORD=YOUR_REDIS_PASSWORD
 AWS_ACCESS_KEY=YOUR_AWS_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS
+AWS_ACCESS_KEY_SESSION_TOKEN=YOUR_AWS_ACCESS_KEY_SESSION_TOKEN
 AWS_BUCKET_NAME=YOUR_AWS_BUCKET_NAME
 LOG_PATH=YOUR_LOG_FOLDER_LOCATION
 CACHE_PATH=YOUR_CACHE_PATH_FILE_LOCATION_STORE
@@ -67,18 +68,20 @@ $ npm run stop-prod
 ## Exam Service Config Setup
 > Create .env file in Server root folder
 ```sh
-NODE_ENV=production #the options is dev, production, production-https
+NODE_ENV=production
 PORT=9000 # If not set, default port is 9000
-DB_TYPE=mongodb_aws # The options mongodb or mongodb_aws, set mongodb_aws if your db at aws cloud
-MONGO_DB=YOUR_MONGO_DATABASE_NAME
 MONGO_USERNAME=YOUR_MONGO_USER
 MONGO_PASSWORD=YOUR_MONGO_PASSWORD
 MONGO_HOST=YOUR_MONGO_HOST
 MONGO_PORT=YOUR_MONGO_PORT # Mongo port default is 27017
-MONGO_CERT=YOUR_MONGO_CERT # The cert location is in ssl folder
 LOG_PATH=YOUR_LOG_FOLDER_LOCATION
 CACHE_PATH=YOUR_CACHE_PATH_FILE_LOCATION_STORE
 ```
+
+## Mongo-Redis Deployment
+In creating redis and mongodb that are managed using docker. You can use docker compose to create both databases. In this environment, you use an Ubuntu instance to run docker.
+Use the **docker-compose.yml** file located in `/mongo-redis/docker-compose.yml` to create both databases. Be sure to customize the variables needed in the docker compose file.
+
 ## Exam API Endpoint
 | API Endppint                               | Description                         | 
 | ------------------------------------- | ----------------------------------- | 
@@ -86,6 +89,8 @@ CACHE_PATH=YOUR_CACHE_PATH_FILE_LOCATION_STORE
 | ***GET "http://exam.example.com/exam/quiz"*** | Quiz data API Endpoint. |
 | ***GET "http://exam.example.com/exam/init"*** | Create exam quiz dummy data. |
 | ***GET "http://exam.example.com/exam/flush"*** | Flush exam quiz dummy data. |
+
+API Endpoint [**link**](https://documenter.getpostman.com/view/32005248/2sAYdbPDUR)
 
 ## Running Exam Service (Public API)
 ```sh

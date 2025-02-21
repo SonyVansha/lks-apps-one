@@ -1,69 +1,69 @@
-const multer         = require('multer')
-const multerS3       = require('multer-s3')
-const { v4: uuid }   = require('uuid')
-const fs             = require('fs')
-const AWS            = require('aws-sdk')
-const env            = require('../env')
+const multer = require('multer')
+const multerS3 = require('multer-s3')
+const { v4: uuid } = require('uuid')
+const fs = require('fs')
+const AWS = require('aws-sdk')
+const env = require('../env')
+
+// Fungsi untuk menentukan ekstensi berdasarkan mimetype
+const getFileExtension = (mimetype, allowedTypes) => {
+    const mimeMap = {
+        'image/png': 'png',
+        'image/jpg': 'jpg',
+        'image/jpeg': 'jpeg',
+        'application/pdf': 'pdf'
+    }
+    return allowedTypes.includes(mimetype) ? mimeMap[mimetype] : null
+}
 
 const filesUploadLocalStorage = (req, res, next) => {
     const storage = multer.diskStorage({
         destination: (req, file, callback) => {
             const path = 'tmp'
-
-            if (!fs.existsSync(path)){
-                fs.mkdirSync(path)
+            if (!fs.existsSync(path)) {
+                fs.mkdirSync(path, { recursive: true })
             }
-
-            if (file.fieldname === "profilePics") { // if uploading resume
-                callback(null, (path))
-            } else { // else uploading image
-                callback(null, (path))
-            }
+            callback(null, path)
         },
         filename: (req, file, callback) => {
-            if (file.fieldname === "profilePics") {
-                let filetypePics = file.mimetype === 'image/png' ? 'png' : (file.mimetype === 'image/jpg' ? 'jpg' : (file.mimetype === 'image/jpeg' && 'jpeg'))
-                callback(null, `${uuid()}.${filetypePics}`)
-            } else {
-                let filetypePdf = file.mimetype === 'application/pdf' ? 'pdf' : (file.mimetype === 'image/jpg' ? 'jpg' : (file.mimetype === 'image/jpeg' && 'jpeg'))
-                callback(null, `${uuid()}.${filetypePdf}`)
-            }
-            
+            const fileExt = getFileExtension(file.mimetype, ['image/png', 'image/jpg', 'image/jpeg', 'application/pdf'])
+            if (!fileExt) return callback(new Error('Invalid file type'), null)
+
+            callback(null, `${uuid()}.${fileExt}`)
         }
     })
 
     const upload = multer({
         storage: storage,
         fileFilter: (req, file, cb) => {
-            if ( file.fieldname === 'profilePics' && file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" ) {
-                cb(null, true)
-            } else if (file.fieldname === 'document' && file.mimetype == "application/pdf") {
-                cb(null, true)
-            } else {
-                cb(null, false)
-                return cb(new Error({code: 'ERR_UPLOAD_FILE_TYPE', msg: 'Only .png, .jpg and .jpeg format allowed!'}))
+            const allowedTypes = file.fieldname === 'profilePics' 
+                ? ['image/png', 'image/jpg', 'image/jpeg'] 
+                : ['application/pdf']
+
+            if (!allowedTypes.includes(file.mimetype)) {
+                return cb(new Error('Only .png, .jpg, .jpeg, and .pdf format allowed!'), false)
             }
+            cb(null, true)
         }
     }).fields([{ name: 'profilePics', maxCount: 1 }, { name: 'document', maxCount: 1 }])
 
     upload(req, res, (err) => {
         if (err) {
-            console.log(new Error(err))
             return res.status(500).json({
-                code: err.code ? err.code : 'ERR_UPLOAD_FILE',
+                code: 'ERR_UPLOAD_FILE',
                 status: 'Error Upload File!',
-                message: err.msg ? err.msg : err
+                message: err.message
             })
-        } else {
-            next()
         }
+        next()
     })
 }
 
 const filesUploadS3 = (req, res, next) => {
     const s3 = new AWS.S3({
         accessKeyId: env.aws.accessKeyId,
-        secretAccessKey: env.aws.secretAccessKey
+        secretAccessKey: env.aws.secretAccessKey,
+        sessionToken: env.aws.sessionToken
     })
 
     const storageS3 = multerS3({
@@ -71,43 +71,37 @@ const filesUploadS3 = (req, res, next) => {
         bucket: env.aws.Bucket,
         contentType: multerS3.AUTO_CONTENT_TYPE,
         key: (req, file, callback) => {
-            if (file.fieldname == "profilePics") {
-                let fileExtPics = file.mimetype === 'image/png' ? 'png' : (file.mimetype === 'image/jpg' ? 'jpg' : (file.mimetype === 'image/jpeg' && 'jpeg'))
-                callback(null, `pictures/${uuid()}.${fileExtPics}`)
-            } else if (file.fieldname == "document") {
-                console.log(file.mimetype)
-                let fileExtPdf = 'pdf'
-                callback(null, `documents/${uuid()}.${fileExtPdf}`)
-            } else {
-                callback('ERR_FIELDNAME', null)
-            }
+            const fileExt = getFileExtension(file.mimetype, ['image/png', 'image/jpg', 'image/jpeg', 'application/pdf'])
+            if (!fileExt) return callback(new Error('Invalid file type'), null)
+
+            const folder = file.fieldname === 'profilePics' ? 'pictures' : 'documents'
+            callback(null, `${folder}/${uuid()}.${fileExt}`)
         }
     })
 
     const upload = multer({
         storage: storageS3,
         fileFilter: (req, file, cb) => {
-            if ( file.fieldname === 'profilePics' && file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" ) {
-                cb(null, true)
-            } else if (file.fieldname === 'document' && file.mimetype == "application/pdf") {
-                cb(null, true)
-            } else {
-                cb(null, false)
-                return cb(new Error({code: 'ERR_UPLOAD_FILE_TYPE', msg: 'Only .png, .jpg and .jpeg format allowed!'}))
+            const allowedTypes = file.fieldname === 'profilePics' 
+                ? ['image/png', 'image/jpg', 'image/jpeg'] 
+                : ['application/pdf']
+
+            if (!allowedTypes.includes(file.mimetype)) {
+                return cb(new Error('Only .png, .jpg, .jpeg, and .pdf format allowed!'), false)
             }
+            cb(null, true)
         }
     }).fields([{ name: 'profilePics', maxCount: 1 }, { name: 'document', maxCount: 1 }])
 
     upload(req, res, (err) => {
         if (err) {
             return res.status(500).json({
-                code: err.code ? err.code : 'ERR_UPLOAD_FILE',
+                code: 'ERR_UPLOAD_FILE',
                 status: 'Error Upload File!',
-                message: err.msg ? err.msg : err
+                message: err.message
             })
-        } else {
-            next()
         }
+        next()
     })
 }
 

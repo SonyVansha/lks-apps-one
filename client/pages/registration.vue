@@ -261,7 +261,18 @@ export default {
         async getData() {
             this.loading = true
             const res = await this.$store.dispatch("majors/storeMajors")
-            this.majorsData = !res.code ? res.map(item => item) : []
+            
+            // Menambahkan log untuk memeriksa apa yang dikembalikan oleh API
+            console.log(res)
+
+            // Mengecek apakah res adalah array
+            if (Array.isArray(res)) {
+                this.majorsData = res.map(item => item); // Menetapkan data jika res adalah array
+            } else {
+                this.majorsData = []; // Set ke array kosong jika bukan array
+                console.error("Expected an array but got:", res); // Menampilkan error di console jika res bukan array
+            }
+
             this.loading = false
         },
         onPicsUpload (event) {

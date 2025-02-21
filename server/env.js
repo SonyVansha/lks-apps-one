@@ -13,10 +13,11 @@ const env = {
     firebase_url: process.env.FIREBASE_URL,
     db_type: process.env.DB_TYPE,
     log_path: process.env.LOG_PATH,
-    cache_path: process.env.LOG_PATH,
+    cache_path: process.env.CACHE_PATH,
     aws: {
         accessKeyId: process.env.AWS_ACCESS_KEY,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        sessionToken: process.env.AWS_ACCESS_KEY_SESSION_TOKEN,
         Bucket: process.env.AWS_BUCKET_NAME
     },
     sequelize: {

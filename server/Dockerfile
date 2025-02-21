@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:18-alpine
 
 ARG NODE_ENV=development
 ARG PORT=8000

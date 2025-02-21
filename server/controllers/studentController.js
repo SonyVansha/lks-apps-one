@@ -6,7 +6,8 @@ const { v4: uuidv4 }  = require('uuid')
 
 const s3 = new AWS.S3({
     accessKeyId: env.aws.accessKeyId,
-    secretAccessKey: env.aws.secretAccessKey
+    secretAccessKey: env.aws.secretAccessKey,
+    sessionToken: env.aws.sessionToken
 })
 
 const delS3Object = (key) => new Promise(async (resolve, reject) => {

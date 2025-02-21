@@ -139,7 +139,7 @@
             nama: item.fullName,
             gender: item.gender === '1' ? 'Male' : 'Female',
             tglLahir: item.tglLahir,
-            majors: item.major.major_name,
+            majors: item.major ? item.major.major_name : 'No major',
             profilePics: item.profilePics,
             document: item.document,
             status: item.status,
