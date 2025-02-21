@@ -116,6 +116,11 @@ sudo systemctl enable docker
 ```
 
 
+Running Docker compose in background system:
+```bash
+docker-compose up -d
+```
+
 ## Exam API Endpoint
 | API Endppint                               | Description                         | 
 | ------------------------------------- | ----------------------------------- | 
