@@ -80,7 +80,7 @@ CACHE_PATH=YOUR_CACHE_PATH_FILE_LOCATION_STORE
 
 ## Mongo-Redis Deployment
 In creating redis and mongodb that are managed using docker. You can use docker compose to create both databases. In this environment, you use an Ubuntu instance to run docker.
-Use the **docker-compose.yml** file located in `/mongo-redis/docker-compose.yml` to create both databases. Be sure to customize the variables needed in the docker compose file.
+Use the **docker-compose.yml** file located in `mongo-redis/docker-compose.yml` to create both databases. follow the instructions details in the mongo-redis/README.md.
 
 ## Exam API Endpoint
 | API Endppint                               | Description                         | 
