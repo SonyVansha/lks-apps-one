@@ -49,6 +49,7 @@ REDIS_PORT=YOUR_REDIS_PORT
 REDIS_PASSWORD=YOUR_REDIS_PASSWORD
 AWS_ACCESS_KEY=YOUR_AWS_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS
+AWS_ACCESS_KEY_SESSION_TOKEN=YOUR_AWS_ACCESS_KEY_SESSION_TOKEN
 AWS_BUCKET_NAME=YOUR_AWS_BUCKET_NAME
 LOG_PATH=YOUR_LOG_FOLDER_LOCATION
 CACHE_PATH=YOUR_CACHE_PATH_FILE_LOCATION_STORE
@@ -69,16 +70,52 @@ $ npm run stop-prod
 ```sh
 NODE_ENV=production #the options is dev, production, production-https
 PORT=9000 # If not set, default port is 9000
-DB_TYPE=mongodb_aws # The options mongodb or mongodb_aws, set mongodb_aws if your db at aws cloud
-MONGO_DB=YOUR_MONGO_DATABASE_NAME
 MONGO_USERNAME=YOUR_MONGO_USER
 MONGO_PASSWORD=YOUR_MONGO_PASSWORD
 MONGO_HOST=YOUR_MONGO_HOST
 MONGO_PORT=YOUR_MONGO_PORT # Mongo port default is 27017
-MONGO_CERT=YOUR_MONGO_CERT # The cert location is in ssl folder
 LOG_PATH=YOUR_LOG_FOLDER_LOCATION
 CACHE_PATH=YOUR_CACHE_PATH_FILE_LOCATION_STORE
 ```
+
+## Database mongodb and redis Config Setup in Ubuntu
+> Create .env file in Server root folder
+```sh
+MONGO_INITDB_ROOT_USERNAME=YOUR_MONGO_USER
+MONGO_INITDB_ROOT_PASSWORD=YOUR_MONGO_PASSWORD
+REDIS_PASSWORD=YOUR_REDIS_PASSWORD
+```
+
+Add Docker's official GPG key
+```sh
+sudo apt-get update
+sudo apt-get install ca-certificates curl -y
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+```
+
+Add the repository to Apt sources:
+```sh
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+```
+
+Install the Docker packages:
+```sh
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose
+```
+
+Verification Docker:
+```sh
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+
+
 ## Exam API Endpoint
 | API Endppint                               | Description                         | 
 | ------------------------------------- | ----------------------------------- | 
@@ -86,6 +123,8 @@ CACHE_PATH=YOUR_CACHE_PATH_FILE_LOCATION_STORE
 | ***GET "http://exam.example.com/exam/quiz"*** | Quiz data API Endpoint. |
 | ***GET "http://exam.example.com/exam/init"*** | Create exam quiz dummy data. |
 | ***GET "http://exam.example.com/exam/flush"*** | Flush exam quiz dummy data. |
+
+API Endpoint [**link**](https://documenter.getpostman.com/view/32005248/2sAYdbPDUR)
 
 ## Running Exam Service (Public API)
 ```sh

@@ -1,6 +1,12 @@
 const mongoose = require("mongoose");
 
 const quizSchema = new mongoose.Schema({
+  examCode: {
+    type: String,
+    trim: true,
+    required: true,
+    unique: true,
+  },
   examTitle: {
     type: String,
     trim: true,

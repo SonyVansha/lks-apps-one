@@ -9,7 +9,8 @@ const express = require("express"),
   fs = require("fs"),
   path = require("path"),
   https = require("https"),
-  connectDB = require("./config/database/mongoose"), // Import koneksi MongoDB
+  // Import koneksi MongoDB
+  connectDB = require("./config/database/mongoose"), 
   port = env.port || 9000;
 
 // Middleware
@@ -19,7 +20,7 @@ app.disable("x-powered-by");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.raw());
-app.use("/public", express.static(__dirname + "/public")); // Public directory
+app.use("/public", express.static(__dirname + "/public"));
 
 // Log Configuration
 const log_path = env.log_path || path.join(__dirname, "logs");
@@ -55,7 +56,8 @@ indexRoute(app);
 
 // Start Server After Database Connection
 const startServer = async () => {
-  await connectDB(); // Pastikan MongoDB terhubung sebelum server berjalan
+  // Memastikan MongoDB terhubung sebelum server berjalan
+  await connectDB(); 
 
   if (env.node_env === "production-https") {
     try {

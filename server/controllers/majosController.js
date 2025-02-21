@@ -9,22 +9,22 @@ exports.index = async (req, res) => {
                 code: 200,
                 status: 'OK', 
                 message: 'Retrieve all data success.',
-                data: majorsData  // Langsung gunakan majorsData
+                data: majorsData 
             });
         } else {
-            res.status(404).json({  // Gunakan status code 404
+            res.status(404).json({  
                 code: 404,
                 status: 'ERR_DATA_NOT_FOUND', 
                 message: 'Data not found!' 
             });
         }
     } catch (err) {
-        console.error('Error:', err); // Cetak error ke console
+        console.error('Error:', err); 
         res.status(500).json({ 
             code: 500,
             status: 'ERR_SERVER_ERROR', 
             message: 'Internal server error!',
-            error: err.message  // Tambahkan detail error ke respons
+            error: err.message
         });
     }
 };
